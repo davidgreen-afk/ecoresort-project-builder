@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecoresort Project Builder</title>
+<style>
+:root{--g:#046A38;--gd:#04472A;--y:#F1C400;--paper:#F5F8F2;--line:#D2DDD3;--ink:#2F3A33;--okbg:#E3F2E8;--badbg:#FBE9E6;--bad:#A33A2B;--warnbg:#FFF8D6;
+ --serif:Georgia,'Times New Roman',serif;--sans:Calibri,'Segoe UI',Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);font-size:17px;line-height:1.6;color:var(--ink);background:var(--paper)}
+header{background:var(--g);color:#fff;padding:12px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-family:var(--serif);font-weight:normal;font-size:21px;margin:0;flex:1 1 220px}
+header small{display:block;opacity:.85;font-size:13.5px;font-family:var(--sans)}
+.hb{font:inherit;font-size:15px;color:#fff;background:none;border:2px solid #fff;border-radius:8px;padding:5px 12px;cursor:pointer}.hb:hover{background:rgba(255,255,255,.15)}
+#savestat{font-size:14px;opacity:.9}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1180px;margin:0 auto}
+nav{padding:16px 12px 40px 16px;border-right:1px solid var(--line);font-size:15px}
+nav .prog{font-size:14px;color:#566559;margin:0 6px 8px}
+nav button{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;font:inherit;background:none;border:0;padding:6px 8px;border-radius:7px;color:var(--ink);cursor:pointer}
+nav button.cur{background:#E4EEDF;color:var(--gd);font-weight:bold}
+nav .pip{flex:0 0 14px;height:14px;margin-top:5px;border-radius:50%;border:2px solid #98A89B}
+nav .started .pip{border-color:var(--y);background:#FFF3B0}nav .done .pip{background:var(--g);border-color:var(--g)}nav .guided .pip{background:var(--y);border-color:var(--y)}
+main{padding:20px 24px 80px;min-width:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px 26px;margin-bottom:16px}
+h2{font-family:var(--serif);font-weight:normal;color:var(--gd);font-size:26px;margin:0 0 4px}
+h3{font-family:var(--serif);font-weight:normal;color:var(--gd);font-size:19px;margin:20px 0 4px}
+p{margin:.5em 0;max-width:70ch}.muted{color:#566559;font-size:15px}
+.field{margin:18px 0}.field>label{display:block;font-weight:bold;color:var(--gd)}.hint{font-size:14.5px;color:#566559;margin:0 0 4px}
+textarea,input[type=text],input[type=number]{width:100%;font:inherit;color:var(--gd);padding:9px 11px;border:2px solid var(--line);border-radius:8px;background:#fff}
+textarea{min-height:110px;resize:vertical}input[type=number]{max-width:200px}
+textarea:focus,input:focus,button:focus-visible,svg:focus-visible{outline:3px solid var(--y);border-color:var(--g)}
+.count{font-size:13.5px;color:#566559;text-align:right}
+.fb{margin-top:6px;padding:10px 14px;border-radius:8px;display:none;font-size:16px}.fb.show{display:block}.fb.ok{background:var(--okbg);border-left:5px solid var(--g)}.fb.no{background:var(--badbg);border-left:5px solid var(--bad)}.fb.hint2{background:var(--warnbg);border-left:5px solid var(--y)}
+.fb ul{list-style:none;padding:0;margin:4px 0 0}.fb li{padding:1px 0}.fb li.y::before{content:"\2713  ";color:var(--g);font-weight:bold}.fb li.n::before{content:"\25CB  ";color:var(--bad)}.fb .tip{color:#566559;font-size:14.5px;display:block;margin-left:20px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+button.b{font:inherit;font-weight:bold;border-radius:8px;padding:9px 20px;border:2px solid var(--g);background:var(--g);color:#fff;cursor:pointer}
+button.b.alt{background:#fff;color:var(--g)}button.b.ghost{background:none;border-color:var(--line);color:var(--ink);font-weight:normal}button.b:disabled{opacity:.45;cursor:not-allowed}
+.banner{padding:10px 14px;border-radius:8px;margin:12px 0;background:var(--okbg);border-left:5px solid var(--g)}
+.warn{padding:10px 14px;border-radius:8px;margin:12px 0;background:var(--warnbg);border-left:5px solid var(--y);font-size:15.5px}
+.zones{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.zones button{font:inherit;font-size:14.5px;border:2px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px 4px 8px;cursor:pointer;display:flex;gap:6px;align-items:center;color:var(--ink)}
+.zones button[aria-pressed=true]{border-color:var(--gd);background:#EEF5EA;font-weight:bold}.zones i{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+svg.map{width:100%;max-width:700px;height:auto;border:2px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair;background:#fff}
+table.t{border-collapse:collapse;width:100%;max-width:700px;margin:8px 0}table.t td,table.t th{border:1px solid var(--line);padding:6px 10px;text-align:left;font-size:15.5px}table.t th{background:#E8F0E3}
+table.t button{font:inherit;background:none;border:0;color:var(--g);text-decoration:underline;cursor:pointer;padding:0}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--gd);color:#fff;padding:10px 18px;border-radius:8px;display:none;z-index:9;max-width:90vw}
+#railbtn{display:none;margin:10px 12px 0}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav{border-right:0;border-bottom:1px solid var(--line);max-height:0;overflow:hidden;padding:0 12px}nav.open{max-height:none;padding:12px}#railbtn{display:inline-block}main{padding:14px 10px 70px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ecoresort Project Builder<small>Build your ecoresort proposal step by step, then export your webpage</small></h1>
+  <span id="savestat" role="status"></span>
+  <button class="hb" id="hSave" type="button">Download save file</button>
+  <button class="hb" id="hLoad" type="button">Load save file</button>
+  <button class="hb" id="hReset" type="button">Start over</button>
+  <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+</header>
+<button class="b ghost" id="railbtn" type="button">Show / hide sections</button>
+<div class="layout"><nav id="nav" aria-label="Sections"></nav><main id="main"></main></div>
+<div id="toast" role="status"></div>
+<script>
+(function(){'use strict';
+var CONFIG={SUBMIT_NOTE:'Submit your PDF to your instructor in Canvas. If your instructor also asked for the webpage file, submit that too.',KEY:'ecoresortBuilder_v1'};
+function C(label,tip,re){return{label:label,tip:tip,t:function(s){return re.test(s);}};}
+function CF(label,tip,fn){return{label:label,tip:tip,t:fn};}
+var BEC=/\b(because|since|so that|which means|therefore|in order to|to (reduce|protect|limit|avoid|prevent|restore|keep|support|conserve|ensure|minimi[sz]e)|this (way|allows|helps|keeps)|that is why|by (using|reducing|limiting|installing|replacing|protecting|restoring|capturing))\b/i;
+function F(id,label,hint,min,crit,o){o=o||{};return{id:id,label:label,hint:hint,min:min,crit:crit,kind:o.kind||'area',ph:o.ph||''};}
+function REASON(){return C('You explain why or how','Use a reason word, for example “because”, “so that”, “to reduce…” or “by using…”.',BEC);}
+var SECTIONS=[
+{id:'team',short:'You and your island',title:'1. You, your resort and your island',intro:'Start by adding your name, naming your resort, and describing your island.',
+ fields:[F('student','Your name','Your name appears on your final webpage.',1,[CF('You entered your name','Type your first and last name.',function(s){return s.trim().length>=3;})],{kind:'text',ph:'First and last name'}),
+  F('resortName','Resort name','Choose a name guests will remember.',1,[CF('You named your resort','Type a name of at least two letters.',function(s){return s.trim().length>=2;})],{kind:'text',ph:'Resort name'}),
+  F('island','Describe your island','Where is it (real or imagined)? Roughly how big is it? What damage did it suffer?',25,[
+   C('You say where it is or what kind of place it is','Mention the setting, such as the ocean or sea it sits in, or its region.',/\b(island|isle|cay|atoll|ocean|sea|gulf|bay|caribbean|pacific|atlantic|indian|tropic|coast|archipelago|reef|lagoon|mediterranean)\b/i),
+   C('You give a rough size','Say roughly how big it is, such as “about 40 square miles” or “small”.',/\b(\d+|small|large|medium|tiny|acre|hectare|mile|km|kilomet|square)\b/i),
+   C('You describe the damage it suffered','Name what degraded it, such as clearing, erosion, pollution, invasive species or damaged coral.',/\b(degrad|bulldoz|erosion|pollut|loss|damag|clear|invasive|overfish|coral|deforest|mining|development|hurricane|dredg|destroy|destruct|dying|bleach)/i)])],
+},
+{id:'visitors',short:'Visitors and recreation',title:'2. Visitors and recreation',intro:'Explain why people come to your resort, how many you welcome each year, what they do, and how you limit the damage from those activities.',
+ fields:[F('why','Why do people come to your resort?','What makes your island special for guests?',20,[
+   C('You name something special about the island','Mention a feature guests come for, such as reefs, wildlife, beaches, culture or quiet.',/\b(reef|beach|wildlife|nature|culture|snorkel|hike|dive|diving|birds?|sea|ocean|forest|island|sunset|food|history|spa|quiet|stargaz|turtle|dolphin)\b/i),
+   C('You say who the guests are','Say who visits, such as families, travelers, students or nature lovers.',/\b(guests?|visitors?|tourists?|travel+ers?|families|couples|people|students|nature lovers|adventurers)\b/i),REASON()]),
+  F('count','About how many visitors do you receive each year?','Give a number.',1,[CF('You gave a whole number above zero','Type a number such as 12000.',function(s){var n=Number(String(s).replace(/,/g,''));return isFinite(n)&&n>0&&Math.floor(n)===n;})],{kind:'num'}),
+  F('limit','How did you decide how many visitors your island can support?','Think about water, energy, waste, space and wildlife.',25,[
+   C('You tie the number to a limit','Name something that limits the number, such as water, energy, waste, space or habitat.',/\b(water|energy|waste|space|habitat|capacity|carrying|limit|cap|room|supply|beds?|rooms?|power|wildlife|reef)\b/i),REASON(),
+   C('You refer to your island’s ecosystems','Mention an ecosystem or species your number protects.',/\b(ecosystem|habitat|species|reef|mangrove|beach|wildlife|nest|turtle|coral|watershed|forest)/i)]),
+  F('rec','What recreational opportunities do you offer?','List at least two.',12,[
+   CF('You list at least two activities','Separate activities with commas or new lines.',function(s){return s.split(/,|;|\n|\band\b/i).filter(function(x){return x.trim().length>2;}).length>=2;}),
+   C('At least one is low-impact','Include something gentle on the island, such as guided hikes, snorkeling, kayaking or birdwatching.',/\b(snorkel|kayak|hike|hiking|bird|dive|diving|guided|sail|paddle|cultur|walk|cycl|bike|yoga|volunteer|tour)/i)]),
+  F('mit','How do you reduce the environmental damage left behind by these activities?','Be specific about what you will do.',25,[
+   C('You name a specific action','Name something concrete, such as limits, permits, trails, moorings, reef-safe rules or monitoring.',/\b(reduce|limit|cap|permit|guide|trail|buoy|mooring|reef-safe|monitor|restor|educat|ban|rules?|zone|rotate|close|fee|training|boardwalk)/i),REASON(),
+   C('You name what you are protecting','Mention the reef, beach, wildlife, water or another part of the island you are protecting.',/\b(reef|beach|dune|mangrove|trail|habitat|wildlife|water|coral|nest|turtle|bird|sand|soil|species)/i)])]},
+{id:'resources',short:'Water, food and energy',title:'3. Water, food and energy',intro:'Explain how your resort obtains each of these three essentials without harming the island.',
+ fields:[F('water','Water: where does it come from, and how do you use it wisely?','Think about freshwater supply, reuse and what you will not do.',25,[
+   C('You name a water source','Name where water comes from, such as rainwater, wells, desalination or reclaimed water.',/\b(rain|cistern|desalin|well|aquifer|reclaimed|recycl|groundwater|catchment|reuse|spring|pipeline|treated|greywater)/i),
+   C('You describe saving or reusing water','Include conservation, such as low-flow fixtures, reuse or greywater.',/\b(low-flow|conserv|efficien|reuse|recycl|greywater|reduce|save|meter|drought|xeriscap|native plants)/i),
+   C('You protect the ecosystem’s water','Say how you avoid harming freshwater, wetlands or the aquifer.',/\b(aquifer|freshwater|saltwater|intrusion|habitat|wetland|stream|watershed|sustainable|recharge|pollut|runoff|ecosystem)/i)]),
+  F('food','Food: how do you supply it?','Local, grown on the island, imported, caught, or a mix?',25,[
+   C('You name where food comes from','Say where it comes from, such as an on-site garden, local farms, aquaponics or imports.',/\b(farm|garden|fish|local|aquapon|hydropon|import|supplier|sustainab|seasonal|grown|harvest|orchard|market|greenhouse|catch)/i),
+   C('You think about the footprint of food','Mention waste, transport, seasonality or overfishing.',/\b(waste|transport|imported|miles|ship|seasonal|organic|overfish|compost|footprint|fresh|packag)/i),REASON()]),
+  F('energy','Energy: what powers the resort?','Name sources, storage or backup, and a trade-off.',30,[
+   C('You name energy sources','Name where power comes from, such as solar, wind, wave, biomass, or a generator.',/\b(solar|wind|wave|tidal|geotherm|biomass|battery|grid|diesel|generator|renewab|hydro|efficien|biogas)/i),
+   C('You address reliability or storage','Say how the lights stay on, such as batteries, backup or storm planning.',/\b(battery|batteries|storage|backup|generator|grid|reliab|outage|storm|hurricane|redundan|microgrid)/i),
+   C('You admit a trade-off','Name a downside, such as cost, land use, wildlife effects, noise or maintenance.',/\b(cost|land|space|wildlife|bird|visual|noise|maint|expens|tradeoff|trade-off|however|but|although|downside|drawback)/i)])]},
+{id:'waste',short:'Waste',title:'4. Waste',intro:'Your resort cannot simply ship its waste somewhere else or dump it in a landfill. Explain how you deal with it on the island.',
+ fields:[F('waste','How does your resort deal with its waste?','Include solid waste, food waste and wastewater if you can.',30,[
+   C('You reduce waste at the source','Include ways to make less waste, such as reuse, refills, bans on single-use items or composting.',/\b(reduce|reuse|refill|ban|single-use|minimi|compost|recycl|upcycl|bulk|repair|donat)/i),
+   C('You treat waste on the island','Explain how waste is handled here, such as composting, digesters, recycling or wastewater treatment.',/\b(compost|digest|recycl|treatment|wastewater|incinerat|biogas|upcycl|reclaim|constructed wetland|septic|processing)/i),
+   CF('You avoid shipping or dumping it','The assignment rules out simply shipping waste away or dumping it in a landfill. If you mention those, say what you do instead.',function(s){return !/\b(ship(ped|ping)?|landfill|dump(ed|ing)?)\b/i.test(s)||/\b(instead|not|no|avoid|without|rather than|never|minimi|only)\b/i.test(s);})])]},
+{id:'transport',short:'Transportation',title:'5. Transportation',intro:'Describe how people and goods move on your island and between your island and other places.',
+ fields:[F('onisland','How do people get around on the island?','',20,[
+   C('You name a way to get around','Name something, such as electric carts, bikes, walking paths or shuttles.',/\b(electric|bike|bicycle|walk|shuttle|cart|boat|sail|pedestrian|solar|trail|path|tram|golf)/i),REASON()]),
+  F('between','How do people and supplies travel between the island and other places?','',25,[
+   C('You name a way to travel','Name something, such as ferries, flights, sailboats or cargo ships.',/\b(ferry|boat|flight|plane|ship|cruise|sail|airstrip|dock|port|electric|biofuel|offset|barge|seaplane|helicopter)/i),
+   C('You consider the impact','Mention fuel, emissions, reefs, noise or habitat.',/\b(emission|fuel|carbon|offset|reef|anchor|dredg|wake|noise|habitat|wildlife|efficien|pollut|footprint|spill)/i),REASON()])]},
+{id:'housing',short:'Employee housing',title:'6. Employee housing',intro:'Describe housing for your employees: where it is located and how it minimizes ecological impacts.',
+ fields:[F('housing','Describe your employee housing.','Where is it, what is it like, and how does it limit damage?',30,[
+   C('You say where it is located','Say where it is, such as inland, near the resort, behind the dunes or away from reserves.',/\b(inland|near|behind|elevated|away|outside|village|mainland|on the island|reserve|buffer|dune|storm|north|south|east|west|center|ridge|hill|existing)/i),
+   C('You say how it limits ecological impact','Name something, such as a small footprint, native landscaping, rainwater capture, solar or reused materials.',/\b(green|elevation|footprint|existing|restor|native|solar|rain|efficien|material|reclaimed|shared|compact|buffer|setback|low-impact)/i),
+   C('You think about employees’ well-being','Mention things like affordability, safety, storms, families or schools.',/\b(affordable|fair|wage|community|family|families|safe|storm|hurricane|school|local|worker|staff|comfort|health|quality)/i)])]},
+{id:'health',short:'Public health',title:'7. Public health',intro:'Explain how you address public health issues and manage healthcare for both employees and guests.',
+ fields:[F('health','How will you address public health and manage healthcare?','',30,[
+   CF('You cover both employees and guests','Mention employees (staff, workers) and guests (visitors).',function(s){return /\b(staff|employee|worker|crew)s?\b/i.test(s)&&/\b(guest|visitor|tourist)s?\b/i.test(s);}),
+   C('You name a way care is provided','Name something specific, such as a clinic, nurse, telehealth, or an evacuation plan.',/\b(clinic|nurse|doctor|telehealth|medical|evacuat|insurance|health center|first aid|vaccin|paramedic|hospital|pharmacy|ambulance)/i),
+   C('You name a public-health issue','Name an issue, such as water quality, sanitation, mosquitoes, heat, food safety or stress.',/\b(water quality|sanit|wastewater|vector|mosquito|disease|heat|food safety|air|noise|mental|stress|outbreak|hygiene|contaminat|sunscreen|drinking water)/i)])]},
+{id:'wildlife',short:'Wildlife areas',title:'8. Wildlife areas in your restoration plan',intro:'Describe the protected areas you have included. Your island has endangered species that need access to upland and freshwater habitat, estuarine habitat, and offshore coral reef habitat.',
+ fields:[
+  F('w1','Watershed','What will you protect or restore, and why does it matter?',18,WA(/\b(watershed|stream|river|spring|pond|runoff|catchment|upland|aquifer|rain|freshwater|slope)/i)),
+  F('w2','Inland, terrestrial and freshwater reserves','',18,WA(/\b(forest|inland|terrestrial|freshwater|upland|pond|wetland|woodland|grassland|nest|reserve|trail|habitat)/i)),
+  F('w3','Mangrove, salt marsh and estuarine preserves','',18,WA(/\b(mangrove|marsh|estuar|tidal|lagoon|brackish|nursery|shoreline|coast)/i)),
+  F('w4','Marine and reef protected areas','',18,WA(/\b(reef|coral|marine|seagrass|no-take|fish|ocean|sea|mooring|bleach)/i))]},
+{id:'corridors',short:'Wildlife corridors',title:'9. Wildlife corridors',intro:'Explain how you will connect your habitats so animals and plants can move between them.',
+ fields:[F('cor','In what ways will you establish wildlife corridors, and why did you choose this restoration plan? How does it preserve biodiversity?','',35,[
+   C('You describe how habitats are connected','Say how areas are linked, such as strips of native habitat, crossings or restored links.',/\b(connect|corridor|link|continuous|underpass|overpass|buffer|green ?belt|strip|unbroken|passage|crossing|stepping stone|restor|replant|boardwalk|elevated)/i),
+   C('You connect it to biodiversity','Explain how connection helps species, such as movement, gene flow or avoiding isolation.',/\b(biodiversity|genetic|migrat|species|dispersal|isolation|fragment|gene flow|range|movement|population|diversity)/i),REASON()])]},
+{id:'species',short:'Indicator species',title:'10. Your indicator species',intro:'Choose one species found on your island that must have access to all of your wildlife areas.',
+ fields:[F('sp','Species name','Common name is fine.',1,[CF('You named a species','Type a species name.',function(s){return s.trim().length>=3;})],{kind:'text',ph:'Species'}),
+  F('niche','Describe its niche: its total way of life','What does it eat, where does it live and breed, and what role does it play?',25,[
+   C('You say what it eats or uses','Name its food or key resources.',/\b(eat|eats|feed|feeds|diet|food|prey|graz|browse|nectar|seeds?|algae|plankton|fish|insects?|forage)/i),
+   C('You say where it lives or breeds','Name its habitat, shelter or nesting needs.',/\b(nest|breed|habitat|shelter|roost|spawn|live|lives|den|burrow|reef|forest|mangrove|beach|pond)/i),
+   C('You say what role it plays','Say what it does for the ecosystem, such as pollinator, predator, prey, decomposer or indicator.',/\b(role|keystone|pollinator|predator|herbivore|decomposer|filter|disperse|prey|indicator|engineer|links?|balance)/i)]),
+  F('interact','Describe its interactions with other organisms and the physical environment in each ecosystem type','Cover the freshwater or watershed, terrestrial, mangrove or estuary, and reef areas.',45,[
+   CF('You cover at least three ecosystem types','Mention at least three of: watershed or freshwater, terrestrial or inland, mangrove or estuary, reef or marine.',function(s){var n=0;[/watershed|freshwater|stream|pond/i,/terrestrial|inland|forest|upland/i,/mangrove|estuar|marsh/i,/reef|marine|coral|ocean/i].forEach(function(r){if(r.test(s))n++;});return n>=3;}),
+   C('You describe living interactions','Name how it interacts with other organisms, such as food, predators, competition or pollination.',/\b(eat|prey|predator|food|pollinat|compet|symbio|nest|host|disperse|feed|shelter|parasite|mutual)/i),
+   C('You describe the physical environment','Mention non-living factors, such as water, salinity, temperature, sunlight, soil, tides or nutrients.',/\b(water|salinity|temperature|sunlight|soil|tide|tides|oxygen|nutrient|current|rain|sand|wind|depth)/i)])]},
+{id:'climate',short:'Climate change',title:'11. Protecting the island from climate change',intro:'Explain how you will protect the island from climate change impacts, including sea level rise, while keeping ecosystems healthy and connected.',
+ fields:[F('clim','How will you protect your island?','Be specific, and keep habitats connected.',35,[
+   C('You name a specific adaptation','Name something concrete, such as raising buildings, setbacks, dunes or living shorelines.',/\b(elevat|setback|dune|mangrove|living shoreline|retreat|buffer|seawall|raise|relocat|storm surge|flood|stilts|drain|reef)/i),
+   C('You keep ecosystems connected','Say how habitats can still connect or shift, such as room to migrate inland.',/\b(corridor|connect|inland|migrate|migration|room|space|buffer|shift|retreat|continuous|link)/i),REASON()])]},
+{id:'charter',short:'Earth Charter module',title:'12. Earth Charter learning module',intro:'The Earth Charter has four guiding principles. For each one, describe how your resort will provide education and outreach to the local community about your sustainable development plans.',
+ fields:[
+  F('ec1','I. Respect and care for the community of life','What education or outreach will you offer, and for whom?',20,EC(/\b(care|respect|species|life|compassion|living|interdepend|community of life|wildlife|nature)/i)),
+  F('ec2','II. Ecological integrity','',20,EC(/\b(ecosystem|biodivers|restor|natural|prevent|precaution|sustainab|habitat|conserv)/i)),
+  F('ec3','III. Social and economic justice','',20,EC(/\b(equit|fair|justice|wage|jobs|poverty|local|ownership|access|inclusive|economic|opportunit|train)/i)),
+  F('ec4','IV. Democracy, nonviolence and peace','',20,EC(/\b(democra|decision|vote|participat|transparen|peace|nonviol|council|input|consult|conflict|cultur|indigen|dialogue|town hall)/i))]},
+{id:'footprint',short:'Ecological footprint',title:'13. Minimizing your ecological footprint',intro:'Look back at the ecological footprint exercise from earlier in the semester for ideas.',
+ fields:[F('fp','How do you minimize the resort’s overall ecological footprint?','Name at least two strategies and how you will know they work.',40,[
+   CF('You name at least two strategies','Mention at least two areas, such as energy, water, waste, transport, food, buildings or materials.',function(s){var n=0;[/energy|solar|wind|power/i,/water/i,/waste|compost|recycl/i,/transport|electric|ferry|bike/i,/food|farm|garden/i,/building|materials|construction/i,/land|habitat/i].forEach(function(r){if(r.test(s))n++;});return n>=2;}),
+   C('You say how you will measure it','Mention how you will track results, such as a footprint audit, monitoring or per-guest measures.',/\b(footprint|hectare|acre|%|per guest|per visitor|carbon|measure|track|monitor|audit|offset|meter|report)/i),REASON()])]},
+{id:'map',short:'Resort map',title:'14. Map of your ecoresort',intro:'Paint a simple map of your island. Choose a zone, then click or drag on the grid. Land zones go on land, and reef areas go in the water.',map:true},
+{id:'venn',short:'Triple bottom line',title:'15. The triple bottom line',intro:'Explain how your resort relates to Environmental Responsibility, Social Well-being and Economic Growth, and how the three overlap in sustainability.',
+ fields:[F('v1','Environmental responsibility','',20,[C('You name an environmental action','Name something your resort does for the environment.',/\b(protect|restor|reduce|renewable|conserv|waste|emission|habitat|reef|solar|compost|native)/i),REASON()]),
+  F('v2','Social well-being','',20,[C('You name a social benefit','Name something for people, such as health, education, culture, housing or safety.',/\b(communit|worker|staff|health|education|culture|equit|housing|safety|fair|local|school|family|families|train)/i),REASON()]),
+  F('v3','Economic growth','',20,[C('You name an economic benefit','Name something about income, jobs, costs or local business.',/\b(revenue|jobs|profit|cost|income|wage|invest|local business|tax|price|budget|employ|economy|economic)/i),REASON()]),
+  F('v4','Where the three overlap: sustainability','Explain how all three work together in your resort.',30,[
+   CF('You connect at least two of the three themes','Mention at least two of environment, social and economic, or use “triple bottom line”.',function(s){var n=0;[/environment|ecolog|nature|habitat/i,/social|communit|people|worker|well-being/i,/econom|jobs|profit|revenue|income|cost/i].forEach(function(r){if(r.test(s))n++;});return n>=2||/triple bottom line/i.test(s);}),
+   C('You mention sustainability','Use the word sustainable or sustainability and say why the overlap matters.',/\bsustainab/i),REASON()])]},
+{id:'review',short:'Sources and export',title:'16. Sources, review and export',intro:'Add your sources, review what is complete, and export your webpage.',review:true}];
+function WA(re){return[C('You say what you will protect or restore','Name an action, such as protect, restore, replant, buffer or limit.',/\b(protect|restore|preserve|reserve|buffer|no-take|replant|remove invasive|exclude|limit|ban|conserve|rehabilit|plant)/i),
+ C('You explain why it matters to the ecosystem','Say what the area does, such as filtering water, nursery habitat or storm protection.',/\b(filter|nursery|storm|erosion|habitat|spawn|nutrient|runoff|sediment|breed|nesting|carbon|coastline|biodiversity|shelter|species|endangered)/i),
+ C('You are specific about this area','Mention something specific to this kind of area.',re)];}
+function EC(re){return[C('You name an education or outreach activity','Name something concrete, such as workshops, tours, school programs or signage.',/\b(workshop|tour|class|school|exhibit|program|training|outreach|volunteer|town hall|signage|app|curriculum|ranger|talk|festival|apprentice|lesson|course|event|camp)/i),
+ C('You say who it is for','Say who takes part, such as local residents, students, staff or visitors.',/\b(local|community|islander|school|students|residents|guests|visitors|staff|youth|elders|families|neighbors)/i),
+ C('You connect it to this principle','Connect it to the principle’s key ideas.',re)];}
+/* ---------- state and saving ---------- */
+var KEY=CONFIG.KEY,LS_OK=true;
+function fresh(){return{f:{},done:{},tries:{},map:null,cur:0,saved:0};}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&o.f){var s=fresh();for(var k in o)s[k]=o[k];return s;}}}catch(e){LS_OK=false;}return fresh();}
+var S=load();
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function stat(t){$('savestat').textContent=t;}
+function saveNow(){S.saved=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));LS_OK=true;var d=new Date(S.saved);stat('Saved '+d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));}catch(e){LS_OK=false;stat('Cannot save in this browser. Download your save file often.');}}
+var tmr;function saveSoon(){clearTimeout(tmr);tmr=setTimeout(saveNow,350);}
+function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display='none';},2600);}
+function words(t){return String(t).trim().split(/\s+/).filter(Boolean).length;}
+function status(sec){var d=S.done[sec.id];if(d==='ok')return'done';if(d==='guided')return'guided';
+  var any=false;(sec.fields||[]).forEach(function(f){if((S.f[f.id]||'').trim())any=true;});if(sec.map&&S.map&&S.map.some(function(r){return r.some(Boolean);}))any=true;if(sec.review&&(S.f.sources||'').trim())any=true;return any?'started':'';}
+function doneCount(){return SECTIONS.filter(function(s){return s.review?false:S.done[s.id]==='ok'||S.done[s.id]==='guided';}).length;}
+var CORE=SECTIONS.filter(function(s){return !s.review;});
+function allDone(){return CORE.every(function(s){return S.done[s.id]==='ok'||S.done[s.id]==='guided';})&&(S.done.review==='ok'||S.done.review==='guided');}
+
+/* ---------- map ---------- */
+var W=14,H=9,CELL=40;
+var LAND=[];(function(){for(var y=0;y<H;y++){LAND[y]=[];for(var x=0;x<W;x++){var dx=(x-6.5)/5.2,dy=(y-4)/3.5,n=0.18*Math.sin(x*1.7+y*0.9)+0.12*Math.cos(y*2.3-x*0.6);LAND[y][x]=dx*dx+dy*dy+n<=1;}}})();
+var ZONES=[{id:'resort',label:'Resort and guest areas',color:'#F1C400',where:'land',dev:1},{id:'housing',label:'Employee housing',color:'#C98A3B',where:'land',dev:1},{id:'energy',label:'Energy',color:'#6B7BE8',where:'land',dev:1},
+ {id:'waste',label:'Waste and water treatment',color:'#8A8A8A',where:'land',dev:1},{id:'dock',label:'Dock, port or airstrip',color:'#3E3E3E',where:'coast',dev:1},{id:'farm',label:'Farm or garden',color:'#B5D66B',where:'land',dev:1},
+ {id:'reserve',label:'Terrestrial and freshwater reserve',color:'#1E7A46',where:'land',prot:1},{id:'watershed',label:'Watershed (streams, ponds)',color:'#3FB0D6',where:'land',prot:1},{id:'mangrove',label:'Mangrove, marsh or estuary',color:'#2E8B8B',where:'coast',prot:1},
+ {id:'corridor',label:'Wildlife corridor',color:'#8ED39B',where:'land'},{id:'reef',label:'Marine and reef protected area',color:'#0B4F9C',where:'ocean'}];
+function zone(id){for(var i=0;i<ZONES.length;i++)if(ZONES[i].id===id)return ZONES[i];return null;}
+function grid(){if(!S.map||S.map.length!==H){S.map=[];for(var y=0;y<H;y++){S.map[y]=[];for(var x=0;x<W;x++)S.map[y][x]='';}}return S.map;}
+function nearOcean(x,y){for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){var nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=W||ny>=H||!LAND[ny][nx])return true;}return false;}
+function canPaint(z,x,y){if(!z)return true;var land=LAND[y][x];if(z.where==='ocean')return !land;if(!land)return false;if(z.where==='coast')return nearOcean(x,y);return true;}
+function mapSVG(g,cursor){var s='<svg class="map" viewBox="0 0 '+W*CELL+' '+H*CELL+'" role="img" aria-label="Map of the ecoresort island painted with zones">';
+  for(var y=0;y<H;y++)for(var x=0;x<W;x++){var id=g[y][x],z=id?zone(id):null,fill=z?z.color:(LAND[y][x]?'#EADFB8':'#CFE6F3');
+    s+='<rect x="'+x*CELL+'" y="'+y*CELL+'" width="'+CELL+'" height="'+CELL+'" fill="'+fill+'" stroke="rgba(0,0,0,.12)"/>';}
+  if(cursor)s+='<rect x="'+(cursor.x*CELL+2)+'" y="'+(cursor.y*CELL+2)+'" width="'+(CELL-4)+'" height="'+(CELL-4)+'" fill="none" stroke="#04472A" stroke-width="4"/>';
+  return s+'</svg>';}
+function legendHTML(g){var used={};g.forEach(function(r){r.forEach(function(c){if(c)used[c]=1;});});return ZONES.filter(function(z){return used[z.id];}).map(function(z){return '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:14px"><i style="width:14px;height:14px;background:'+z.color+';border:1px solid rgba(0,0,0,.3);display:inline-block"></i>'+z.label+'</span>';}).join('');}
+function mapChecks(){var g=grid(),cnt={},land=0,dev=0,i,x,y;ZONES.forEach(function(z){cnt[z.id]=0;});
+  for(y=0;y<H;y++)for(x=0;x<W;x++){if(LAND[y][x])land++;var c=g[y][x];if(c){cnt[c]++;if(zone(c).dev&&LAND[y][x])dev++;}}
+  var pct=land?Math.round(100*dev/land):0;
+  var wasteBad=false;for(y=0;y<H;y++)for(x=0;x<W;x++)if(g[y][x]==='waste'){for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){var nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<W&&ny<H&&/^(watershed|mangrove|reef)$/.test(g[ny][nx]))wasteBad=true;}}
+  var prot=function(c){return c==='reserve'||c==='watershed'||c==='mangrove';},comp={},nc=0;
+  function flood(sx,sy,test,mark,id){var st=[[sx,sy]];mark[sy+','+sx]=id;while(st.length){var p=st.pop();[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var nx=p[0]+d[0],ny=p[1]+d[1];if(nx>=0&&ny>=0&&nx<W&&ny<H&&test(g[ny][nx])&&mark[ny+','+nx]===undefined){mark[ny+','+nx]=id;st.push([nx,ny]);}});}}
+  for(y=0;y<H;y++)for(x=0;x<W;x++)if(prot(g[y][x])&&comp[y+','+x]===undefined)flood(x,y,prot,comp,nc++);
+  var cm={},cn=0,linked=false;for(y=0;y<H;y++)for(x=0;x<W;x++)if(g[y][x]==='corridor'&&cm[y+','+x]===undefined){flood(x,y,function(c){return c==='corridor';},cm,cn);var seen={};
+    for(var k in cm)if(cm[k]===cn){var q=k.split(','),cy=+q[0],cx=+q[1];[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var nx=cx+d[0],ny=cy+d[1];if(nx>=0&&ny>=0&&nx<W&&ny<H&&comp[ny+','+nx]!==undefined)seen[comp[ny+','+nx]]=1;});}
+    if(Object.keys(seen).length>=2)linked=true;cn++;}
+  return[
+   {ok:cnt.resort>=2&&cnt.housing>=1&&cnt.energy>=1&&cnt.waste>=1&&cnt.dock>=1,label:'All developed zones are placed',tip:'You need resort and guest areas (2 or more cells), employee housing, energy, waste and water treatment, and a dock, port or airstrip.'},
+   {ok:cnt.reserve>=2&&cnt.watershed>=1&&cnt.mangrove>=2,label:'Protected land areas are placed',tip:'Add a terrestrial reserve (2 or more cells), a watershed (1 or more) and mangrove, marsh or estuary on the coast (2 or more).'},
+   {ok:cnt.reef>=3,label:'A marine and reef protected area is in the water',tip:'Paint at least three cells of marine and reef protected area in the ocean around the island.'},
+   {ok:linked,label:'A wildlife corridor links two separate protected areas',tip:'Place two protected areas apart from each other, then connect them with corridor cells that touch both.'},
+   {ok:pct<=40&&land>0&&dev>0,label:'Developed land is '+pct+'% of the island (aim for 40% or less)',tip:'Your resort needs room, but reserves need more. Shrink the developed areas or choose smaller footprints.'},
+   {ok:!wasteBad&&cnt.waste>=1,label:'Waste and water treatment is not next to a watershed, mangrove or reef',tip:'Move the waste and treatment cells away from water-based habitats so leaks cannot reach them.'}];}
+
+/* ---------- venn ---------- */
+function vennSVG(){return '<svg viewBox="0 0 360 320" role="img" aria-label="Venn diagram of environmental responsibility, social well-being and economic growth overlapping in sustainability" style="width:100%;max-width:380px"><circle cx="130" cy="120" r="100" fill="#1E7A46" fill-opacity=".45"/><circle cx="230" cy="120" r="100" fill="#F1C400" fill-opacity=".5"/><circle cx="180" cy="205" r="100" fill="#3FB0D6" fill-opacity=".45"/>'+
+ '<text x="85" y="95" font-size="15" font-family="Calibri,Arial" fill="#04472A" font-weight="bold">Environmental</text><text x="85" y="113" font-size="15" font-family="Calibri,Arial" fill="#04472A" font-weight="bold">responsibility</text>'+
+ '<text x="232" y="95" font-size="15" font-family="Calibri,Arial" fill="#4a3b00" font-weight="bold">Social</text><text x="232" y="113" font-size="15" font-family="Calibri,Arial" fill="#4a3b00" font-weight="bold">well-being</text>'+
+ '<text x="180" y="262" text-anchor="middle" font-size="15" font-family="Calibri,Arial" fill="#08425f" font-weight="bold">Economic growth</text><text x="180" y="160" text-anchor="middle" font-size="14" font-family="Calibri,Arial" fill="#04472A" font-weight="bold">Sustainable</text></svg>';}
+
+/* ---------- rendering ---------- */
+var main=$('main'),cursor={x:6,y:4},tool='resort';
+function renderNav(){var h='<p class="prog">'+doneCount()+' of '+CORE.length+' sections complete</p>';SECTIONS.forEach(function(s,i){h+='<button type="button" data-i="'+i+'" class="'+status(s)+(i===S.cur?' cur':'')+'"><span class="pip"></span><span>'+esc(s.short)+'</span></button>';});$('nav').innerHTML=h;}
+function render(){renderNav();var sec=SECTIONS[S.cur];window.scrollTo(0,0);
+  if(sec.review)return renderReview(sec);
+  var h=(S.cur===0?introHTML():'')+'<div class="card"><h2>'+esc(sec.title)+'</h2><p>'+esc(sec.intro)+'</p>';
+  if(S.done[sec.id]==='ok')h+='<div class="banner"><b>This section is complete.</b> You can still edit it. Press Check again after you change anything.</div>';
+  else if(S.done[sec.id]==='guided')h+='<div class="warn">You marked this section complete with guidance. Come back to improve it if you can.</div>';
+  (sec.fields||[]).forEach(function(f){h+=fieldHTML(f);});
+  if(sec.map)h+=mapHTML();
+  if(sec.id==='venn')h+='<div style="margin:14px 0">'+vennSVG()+'</div>';
+  h+='<div class="btns"><button type="button" class="b" id="chk">Check this section</button></div><div class="fb" id="secfb"></div><div id="gz"></div>'+navBtns()+'</div>';
+  main.innerHTML=h;wire(sec);}
+function introHTML(){return '<div class="card"><h2>Welcome to the Ecoresort Project</h2>'+
+ '<p>Imagine the world in 2030. Your consulting firm has asked you to create a pitch for a sustainable, eco-friendly island resort that also restores the ecological damage already done to the island. Several endangered species live there, and they need access to upland and freshwater habitat, estuarine habitat, and offshore coral reef habitat. In short: <b>what world do you want to create for humanity in 2030?</b></p>'+
+ '<h3>What you will be able to do</h3><p>By the end of this project, you will be able to:</p><ul>'+
+ '<li>Conduct basic research on current environmental issues such as energy consumption, food availability, freshwater supply, waste generation, human health, and habitat restoration.</li>'+
+ '<li>Generate evidence-based decisions about the degradation of natural capital that results from human-dominated systems.</li>'+
+ '<li>Develop a business proposal that treats environmental sustainability as a fundamental bottom-line consideration while addressing social needs, economic interests, and cultural awareness of community members and tourists.</li>'+
+ '<li>Connect issues of civic importance to your daily life and decision-making.</li>'+
+ '<li>Communicate your plan clearly in writing and with visuals.</li></ul>'+
+ '<h3>What you will do</h3><p>You will work through <b>16 short sections</b>, one for each part of your resort plan: your island, visitors, water, food and energy, waste, transportation, housing, public health, wildlife areas and corridors, an indicator species, climate protection, an Earth Charter learning module, your ecological footprint, a map, and the triple bottom line. Each section gives you feedback on your writing. Read the checklist, add what is missing, and check again. Your work is your own, so write in your own words. You can open sections in any order, but finish them all before your final export.</p>'+
+ '<h3>How you will apply course content</h3><p>This project is your chance to use what you have learned in class on a realistic problem. As you write, connect each decision to course concepts, such as:</p><ul>'+
+ '<li><b>Sustainability of natural resources, and ecosystem and economic services</b> when you plan water, food, energy and visitors.</li>'+
+ '<li><b>Carrying capacity and waste</b> when you decide how many guests the island can support and how you deal with waste.</li>'+
+ '<li><b>Habitat loss, biodiversity and niches</b> when you design reserves, corridors and an indicator species.</li>'+
+ '<li><b>Climate change impacts</b> when you protect the island and keep habitats connected.</li>'+
+ '<li><b>Ecological footprint</b> when you minimize your resort’s impact. Look back at the footprint exercise from earlier this semester.</li>'+
+ '<li><b>The Earth Charter and the triple bottom line</b> when you plan education and explain how environment, people and economy fit together.</li></ul>'+
+ '<p>Find and cite real sources, including at least one peer-reviewed article, to back up your ideas.</p>'+
+ '<h3>What you will build and submit</h3><p>You will build a <b>complete proposal for your ecoresort</b> that reads like a webpage. It includes your written plan, a map of your island, a triple bottom line diagram, and your sources. At the end, you will save it as a <b>PDF</b> (and, if your instructor asks, as a <b>webpage file</b>) to submit.</p>'+
+ '<div class="warn"><b>Saving your work.</b> Your work saves automatically in this browser on this device. To keep a backup, or to continue on another device, use <b>Download save file</b> at the top of the page and <b>Load save file</b> later.</div></div>';}
+function navBtns(){return '<div class="btns" style="margin-top:22px"><button type="button" class="b alt" id="prev"'+(S.cur===0?' disabled':'')+'>Previous</button><button type="button" class="b alt" id="next"'+(S.cur===SECTIONS.length-1?' disabled':'')+'>Next</button></div>';}
+function fieldHTML(f){var v=S.f[f.id]||'',inp;
+  if(f.kind==='text')inp='<input type="text" id="in_'+f.id+'" value="'+esc(v)+'" placeholder="'+esc(f.ph)+'" autocomplete="off">';
+  else if(f.kind==='num')inp='<input type="number" id="in_'+f.id+'" value="'+esc(v)+'" min="1" step="1" inputmode="numeric">';
+  else inp='<textarea id="in_'+f.id+'" placeholder="'+esc(f.ph||'Write in your own words…')+'">'+esc(v)+'</textarea>';
+  return '<div class="field" data-id="'+f.id+'"><label for="in_'+f.id+'">'+esc(f.label)+'</label>'+(f.hint?'<p class="hint">'+esc(f.hint)+'</p>':'')+inp+(f.kind==='area'?'<div class="count" id="ct_'+f.id+'"></div>':'')+'<div class="fb" id="fb_'+f.id+'" aria-live="polite"></div></div>';}
+function mapHTML(){return '<div class="zones" role="group" aria-label="Zones">'+ZONES.map(function(z){return '<button type="button" data-z="'+z.id+'" aria-pressed="'+(tool===z.id)+'"><i style="background:'+z.color+'"></i>'+z.label+'</button>';}).join('')+'<button type="button" data-z="erase" aria-pressed="'+(tool==='erase')+'"><i style="background:#fff"></i>Erase</button></div><div id="mapbox">'+mapSVG(grid(),null)+'</div><p class="muted">Click or drag to paint. With a keyboard, focus the map, use the arrow keys to move, and press Space to paint.</p><div class="btns"><button type="button" class="b ghost" id="clearmap">Clear the map</button></div>';}
+
+function listHTML(res){return '<ul>'+res.map(function(r){return '<li class="'+(r.ok?'y':'n')+'">'+esc(r.label)+(r.ok?'':'<span class="tip">'+esc(r.tip)+'</span>')+'</li>';}).join('')+'</ul>';}
+function checkField(f){var v=String(S.f[f.id]||'').trim(),box=$('fb_'+f.id);
+  if(!v){box.className='fb show hint2';box.textContent='Write something here first.';return false;}
+  if(f.kind==='area'&&words(v)<f.min){box.className='fb show hint2';box.textContent='Say a little more. Aim for at least '+f.min+' words ('+words(v)+' so far).';return false;}
+  var res=f.crit.map(function(c){return{ok:c.t(v),label:c.label,tip:c.tip};}),ok=res.every(function(r){return r.ok;});
+  box.className='fb show '+(ok?'ok':'no');box.innerHTML=listHTML(res);return ok;}
+function wire(sec){
+  Array.prototype.forEach.call(main.querySelectorAll('[id^="in_"]'),function(el){var id=el.id.slice(3);el.addEventListener('input',function(){S.f[id]=el.value;if(S.done[sec.id]){delete S.done[sec.id];renderNav();}var fb=$('fb_'+id);if(fb)fb.className='fb';var ct=$('ct_'+id);if(ct)ct.textContent=words(el.value)+' words';saveSoon();});var ct=$('ct_'+id);if(ct)ct.textContent=words(el.value)+' words';});
+  $('prev').onclick=function(){go(S.cur-1);};$('next').onclick=function(){go(S.cur+1);};
+  $('chk').onclick=function(){checkSection(sec);};
+  if(sec.map)wireMap();
+}
+function checkSection(sec){var oks=[],all=true;
+  (sec.fields||[]).forEach(function(f){var ok=checkField(f);if(!ok)all=false;});
+  if(sec.map){var res=mapChecks(),ok=res.every(function(r){return r.ok;});var b=$('secfb');b.className='fb show '+(ok?'ok':'no');b.innerHTML=listHTML(res);if(!ok)all=false;}
+  finishCheck(sec,all);}
+function finishCheck(sec,all){var gz=$('gz');gz.innerHTML='';
+  if(all){S.done[sec.id]='ok';S.tries[sec.id]=0;saveNow();renderNav();var b=$('secfb');if(!sec.map){b.className='fb show ok';b.innerHTML='<b>Section complete.</b> Nice work. Move on when you are ready.';}else{b.insertAdjacentHTML('afterbegin','<b>Map complete.</b>');}return;}
+  S.tries[sec.id]=(S.tries[sec.id]||0)+1;saveNow();
+  var b2=$('secfb');if(!sec.map){b2.className='fb show no';b2.innerHTML='<b>Not quite yet.</b> Read the notes under each box, add what is missing, then check again.';}
+  if(S.tries[sec.id]>=3){gz.innerHTML='<div class="btns"><button type="button" class="b ghost" id="guide">Mark complete anyway (I will revise later)</button></div>';$('guide').onclick=function(){S.done[sec.id]='guided';saveNow();render();};}}
+function wireMap(){var svgHost=$('mapbox'),painting=false,lastMsg=0,NS='http://www.w3.org/2000/svg';
+  Array.prototype.forEach.call(main.querySelectorAll('[data-z]'),function(b){b.onclick=function(){tool=b.dataset.z;Array.prototype.forEach.call(main.querySelectorAll('[data-z]'),function(x){x.setAttribute('aria-pressed',x===b);});};});
+  function svgEl(){return svgHost.querySelector('svg');}
+  function colorOf(x,y){var id=grid()[y][x],z=id?zone(id):null;return z?z.color:(LAND[y][x]?'#EADFB8':'#CFE6F3');}
+  function showCursor(on){var svg=svgEl(),r=svg.querySelector('#curs');if(!on){if(r)r.remove();return;}if(!r){r=document.createElementNS(NS,'rect');r.setAttribute('id','curs');r.setAttribute('fill','none');r.setAttribute('stroke','#04472A');r.setAttribute('stroke-width','4');r.setAttribute('width',CELL-4);r.setAttribute('height',CELL-4);svg.appendChild(r);}r.setAttribute('x',cursor.x*CELL+2);r.setAttribute('y',cursor.y*CELL+2);}
+  function paint(x,y){if(x<0||y<0||x>=W||y>=H)return;var z=tool==='erase'?null:zone(tool);if(z&&!canPaint(z,x,y)){if(Date.now()-lastMsg>1500){lastMsg=Date.now();toast(z.where==='ocean'?'Reef areas belong in the water.':z.where==='coast'?'This zone must be on the coast, next to the water.':'This zone belongs on land.');}return;}
+    if(grid()[y][x]===(z?z.id:''))return;grid()[y][x]=z?z.id:'';svgEl().querySelectorAll('rect')[y*W+x].setAttribute('fill',colorOf(x,y));if(S.done.map){delete S.done.map;renderNav();}saveSoon();}
+  function cellAt(e){var r=svgEl().getBoundingClientRect();return{x:Math.floor((e.clientX-r.left)/r.width*W),y:Math.floor((e.clientY-r.top)/r.height*H)};}
+  var svg=svgEl();svg.setAttribute('tabindex','0');
+  svg.addEventListener('pointerdown',function(e){painting=true;showCursor(false);var c=cellAt(e);paint(c.x,c.y);});
+  svg.addEventListener('pointermove',function(e){if(painting){var c=cellAt(e);paint(c.x,c.y);}});
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){svg.addEventListener(ev,function(){painting=false;});});
+  svg.addEventListener('keydown',function(e){var m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+    if(m){e.preventDefault();cursor.x=Math.max(0,Math.min(W-1,cursor.x+m[0]));cursor.y=Math.max(0,Math.min(H-1,cursor.y+m[1]));showCursor(true);}
+    else if(e.key===' '||e.key==='Enter'){e.preventDefault();showCursor(true);paint(cursor.x,cursor.y);}});
+  $('clearmap').onclick=function(){if(confirm('Clear the whole map?')){S.map=null;delete S.done.map;saveNow();render();}};}
+function go(i){if(i<0||i>=SECTIONS.length)return;S.cur=i;saveNow();render();$('nav').classList.remove('open');}
+
+/* ---------- review and export ---------- */
+function renderReview(sec){
+  var rows=CORE.map(function(s){var d=S.done[s.id];return '<tr><td>'+esc(s.short)+'</td><td>'+(d==='ok'?'Complete':d==='guided'?'Complete with guidance':status(s)==='started'?'In progress':'Not started')+'</td><td><button type="button" data-go="'+SECTIONS.indexOf(s)+'">Open</button></td></tr>';}).join('');
+  var h='<div class="card"><h2>'+esc(sec.title)+'</h2><p>'+esc(sec.intro)+'</p>';
+  h+=fieldHTML(F('sources','Sources','List at least two sources, with years. Include at least one peer-reviewed article.',1,[]));
+  h+='<div class="btns"><button type="button" class="b" id="chk">Check sources</button></div><div class="fb" id="secfb"></div><h3>Your progress</h3><table class="t"><tr><th>Section</th><th>Status</th><th></th></tr>'+rows+'</table>';
+  var ready=allDone();
+  h+='<h3>Export</h3><div class="warn" id="exnote">'+(ready?'Everything is complete. Save your PDF, then submit it. '+esc(CONFIG.SUBMIT_NOTE):'Some sections are not complete yet. You can download a draft at any time, but finish every section before your final export.')+'</div>';
+  h+='<div class="btns"><button type="button" class="b" id="exPdf">'+(ready?'Save my PDF':'Save a draft PDF')+'</button><button type="button" class="b alt" id="exPrev">Preview my webpage</button><button type="button" class="b alt" id="exHtml">'+(ready?'Download webpage (.html)':'Download draft webpage')+'</button></div>';
+  h+='<div class="btns"><button type="button" class="b ghost" id="exTxt">Copy a text version</button><button type="button" class="b ghost" id="exJson">Download save file</button></div>';
+  h+='<p class="muted"><b>PDF:</b> a print window opens. Choose <b>Save as PDF</b> as the destination, then save the file. If the window does not appear (some phones and tablets), download the webpage, open it, and use your browser’s Print or Share menu to save a PDF.</p>';
+  h+='<p class="muted">Your work is saved in this browser on this device. To keep a backup or work on another device, download your save file and load it later.</p>'+navBtns()+'</div>';
+  main.innerHTML=h;
+  $('in_sources').addEventListener('input',function(){S.f.sources=this.value;if(S.done.review){delete S.done.review;renderNav();}saveSoon();});
+  $('chk').onclick=function(){var v=String(S.f.sources||''),lines=v.split(/\n+/).filter(function(l){return l.trim().length>8;}),yrs=lines.filter(function(l){return /\b(19|20)\d{2}\b/.test(l);}).length,peer=/\b(journal|doi|proceedings|bulletin|sustainability|ecology|conservation|nature|science|review|peer)/i.test(v);
+    var res=[{ok:lines.length>=2,label:'You listed at least two sources',tip:'Put each source on its own line.'},{ok:yrs>=2,label:'At least two sources include a year',tip:'Add the year of publication to each source.'},{ok:peer,label:'One looks like a peer-reviewed source',tip:'Include a journal article, for example with a journal name or DOI.'}];
+    var ok=res.every(function(r){return r.ok;}),b=$('secfb');b.className='fb show '+(ok?'ok':'no');b.innerHTML=listHTML(res);if(ok){S.done.review='ok';saveNow();render();}else{S.tries.review=(S.tries.review||0)+1;saveNow();if(S.tries.review>=3&&!$('gz2')){b.insertAdjacentHTML('afterend','<div class="btns" id="gz2"><button type="button" class="b ghost" id="g2">Mark complete anyway</button></div>');$('g2').onclick=function(){S.done.review='guided';saveNow();render();};}}};
+  Array.prototype.forEach.call(main.querySelectorAll('[data-go]'),function(b){b.onclick=function(){go(+b.dataset.go);};});
+  $('prev').onclick=function(){go(S.cur-1);};$('next').onclick=function(){};
+  $('exHtml').onclick=function(){download(slug()+'.html',buildPage(!allDone()),'text/html');};
+  $('exPdf').onclick=printPDF;
+  $('exPrev').onclick=function(){var u=URL.createObjectURL(new Blob([buildPage(!allDone())],{type:'text/html'}));var w=window.open(u,'_blank');if(!w)toast('Your browser blocked the preview. Allow pop-ups for this page and try again.');setTimeout(function(){URL.revokeObjectURL(u);},60000);};
+  $('exJson').onclick=saveFile;
+  $('exTxt').onclick=function(){var t=buildText();if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(function(){toast('Text copied.');},function(){toast('Could not copy. Use the webpage download instead.');});else toast('Copy is not available here. Use the webpage download instead.');};
+}
+function printPDF(){var f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);var d=f.contentWindow.document;d.open();d.write(buildPage(!allDone()));d.close();var fired=false;function go(){if(fired)return;fired=true;try{f.contentWindow.focus();f.contentWindow.print();}catch(e){toast('Could not open the print window. Download the webpage instead.');}setTimeout(function(){if(f.parentNode)f.parentNode.removeChild(f);},120000);}f.onload=go;setTimeout(go,700);}
+function slug(){var n=(S.f.resortName||'ecoresort').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return 'ecoresort-'+(n||'project');}
+function download(name,text,type){var b=new Blob([text],{type:type+';charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);}
+function saveFile(){saveNow();download(slug()+'-save.json',JSON.stringify(S),'application/json');toast('Save file downloaded.');}
+function nl(s){return esc(s).replace(/\n/g,'<br>');}
+function buildPage(draft){var name=S.f.resortName||'My Ecoresort';
+  var h='<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(name)+'</title><style>body{font-family:Calibri,Arial,sans-serif;line-height:1.6;color:#2F3A33;max-width:860px;margin:0 auto;padding:0 18px 60px;background:#F5F8F2}header{background:#046A38;color:#fff;margin:0 -18px 20px;padding:36px 28px}h1{font-family:Georgia,serif;font-weight:normal;font-size:40px;margin:0}header p{margin:6px 0 0;opacity:.92}h2{font-family:Georgia,serif;font-weight:normal;color:#04472A;border-bottom:3px solid #F1C400;padding-bottom:4px;margin-top:34px}h3{color:#04472A;margin:16px 0 2px;font-size:17px}.draft{background:#FFF8D6;border-left:5px solid #F1C400;padding:10px 14px;margin:14px 0}svg{max-width:100%;height:auto}footer{margin-top:40px;font-size:14px;color:#566559}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:14mm}@media print{body{background:#fff;max-width:none;padding:0}header{margin:0 0 16px}h2,h3{break-after:avoid}svg,p,li{break-inside:avoid}}</style></head><body><header><h1>'+esc(name)+'</h1><p>'+nl(S.f.island||'')+'</p>'+(S.f.student?'<p><b>By '+esc(S.f.student)+'</b></p>':'')+'</header>';
+  if(draft)h+='<div class="draft"><b>Draft.</b> Some sections of this proposal are not complete yet.</div>';
+  SECTIONS.forEach(function(s){if(s.review||s.id==='team')return;var title=s.title.replace(/^\d+\.\s*/,'');h+='<h2>'+esc(title)+'</h2>';
+    if(s.map){h+=mapSVG(grid(),null)+'<p>'+legendHTML(grid())+'</p>';return;}
+    if(s.id==='venn')h+=vennSVG();
+    (s.fields||[]).forEach(function(f){var v=S.f[f.id];if(v&&String(v).trim())h+='<h3>'+esc(f.label)+'</h3><p>'+nl(v)+'</p>';});});
+  if((S.f.sources||'').trim())h+='<h2>Sources</h2><p>'+nl(S.f.sources)+'</p>';
+  return h+'<footer>Created with the Ecoresort Project Builder · '+new Date().toLocaleDateString()+'</footer></body></html>';}
+function buildText(){var t=(S.f.resortName||'My Ecoresort')+'\n'+(S.f.student?'By '+S.f.student+'\n':'')+(S.f.island||'')+'\n\n';
+  SECTIONS.forEach(function(s){if(s.review||s.id==='team'||s.map)return;t+=s.title.replace(/^\d+\.\s*/,'').toUpperCase()+'\n';(s.fields||[]).forEach(function(f){var v=S.f[f.id];if(v&&String(v).trim())t+=f.label+'\n'+v+'\n\n';});});
+  if((S.f.sources||'').trim())t+='SOURCES\n'+S.f.sources+'\n';return t;}
+
+/* ---------- header buttons, nav, boot ---------- */
+window.addEventListener('pagehide',saveNow);window.addEventListener('beforeunload',saveNow);document.addEventListener('visibilitychange',function(){if(document.hidden)saveNow();});
+$('hSave').onclick=saveFile;
+$('hLoad').onclick=function(){$('fileIn').click();};
+$('fileIn').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);if(!o||typeof o.f!=='object')throw 0;if(confirm('Load this save file? It will replace the work currently in this browser.')){var s=fresh();for(var k in o)s[k]=o[k];S=s;saveNow();render();toast('Save file loaded.');}}catch(e){toast('That does not look like an ecoresort save file.');}$('fileIn').value='';};r.readAsText(f);};
+$('hReset').onclick=function(){if(confirm('Start over? This clears all of your work in this browser. Download your save file first if you may want it back.')){S=fresh();saveNow();render();}};
+$('nav').addEventListener('click',function(e){var b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i);});
+$('railbtn').onclick=function(){$('nav').classList.toggle('open');};
+if(!LS_OK)stat('Saving is blocked in this browser. Download your save file often.');else if(S.saved)stat('Loaded your saved work');
+render();
+
+})();
+</script>
+</body>
+</html>
